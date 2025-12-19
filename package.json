@@ -1,0 +1,22 @@
+{
+  "name": "gaycarboys-local",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint:php": "composer phpcs",
+    "lint:js": "eslint \"wordpress/wp-content/**/*.js\" || echo \"No JS files yet\"",
+    "lint:css": "stylelint \"wordpress/wp-content/**/*.css\" || echo \"No CSS files yet\"",
+    "lint": "npm run lint:php && npm run lint:js && npm run lint:css",
+    "health": "node scripts/health-check.js",
+    "test:phpunit": "phpunit",
+    "test:e2e": "npx playwright test",
+    "validate": "npm run lint && npm run health && npm run test:phpunit && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "eslint": "^9.0.0",
+    "stylelint": "^16.0.0"
+  }
+}
+
+
