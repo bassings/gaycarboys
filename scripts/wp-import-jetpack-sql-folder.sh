@@ -81,10 +81,15 @@ echo ""
 
 # Update URLs
 LOCAL_URL="${WP_HOME:-http://localhost:8080}"
+echo ""
 echo "Updating URLs to local environment..."
-docker compose exec -T wordpress wp search-replace "gaycarboys.com" "$(echo $LOCAL_URL | sed 's|http://||' | sed 's|https://||')" --skip-columns=guid 2>/dev/null || true
-docker compose exec -T wordpress wp search-replace "http://gaycarboys.com" "$LOCAL_URL" --skip-columns=guid 2>/dev/null || true
-docker compose exec -T wordpress wp search-replace "https://gaycarboys.com" "$LOCAL_URL" --skip-columns=guid 2>/dev/null || true
+echo "  Replacing https://gaycarboys.com with $LOCAL_URL..."
+docker compose run --rm wpcli wp search-replace "https://gaycarboys.com" "$LOCAL_URL" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "  Replacing http://gaycarboys.com with $LOCAL_URL..."
+docker compose run --rm wpcli wp search-replace "http://gaycarboys.com" "$LOCAL_URL" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "  Replacing gaycarboys.com (domain only) with $(echo $LOCAL_URL | sed 's|http://||' | sed 's|https://||')..."
+docker compose run --rm wpcli wp search-replace "gaycarboys.com" "$(echo $LOCAL_URL | sed 's|http://||' | sed 's|https://||')" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "✅ URL replacement complete"
 
 echo ""
 echo "=== Next Steps ==="

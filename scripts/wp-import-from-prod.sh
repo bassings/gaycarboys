@@ -27,8 +27,15 @@ rsync -a "$WP_CONTENT_SRC"/ wordpress/wp-content/
 echo "Importing database..."
 docker compose exec -T db sh -c "mysql -u\${MYSQL_USER:-gaycarboys} -p\${MYSQL_PASSWORD:-gaycarboys} \${MYSQL_DATABASE:-gaycarboys}" < "$DB_DUMP"
 
+LOCAL_URL="${WP_HOME:-http://localhost:8080}"
 echo "Running search-replace for URLs..."
-docker compose run --rm wpcli wp search-replace "http://gaycarboys.com" "${WP_HOME:-http://gaycarboys.local}" --skip-columns=guid
+echo "  Replacing https://gaycarboys.com with $LOCAL_URL..."
+docker compose run --rm wpcli wp search-replace "https://gaycarboys.com" "$LOCAL_URL" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "  Replacing http://gaycarboys.com with $LOCAL_URL..."
+docker compose run --rm wpcli wp search-replace "http://gaycarboys.com" "$LOCAL_URL" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "  Replacing gaycarboys.com (domain only) with $(echo $LOCAL_URL | sed 's|http://||' | sed 's|https://||')..."
+docker compose run --rm wpcli wp search-replace "gaycarboys.com" "$(echo $LOCAL_URL | sed 's|http://||' | sed 's|https://||')" --all-tables --skip-columns=guid 2>/dev/null || true
+echo "✅ URL replacement complete"
 
 echo "Done."
 

@@ -11,7 +11,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-    image: wordpress:php8.1-apache
+    image: wordpress:php8.3-apache
     depends_on:
       - db
     restart: unless-stopped
@@ -29,7 +29,7 @@ services:
       - ./config/wp-config-local.php:/var/www/html/wp-config.php
 
   wpcli:
-    image: wordpress:cli-php8.1
+    image: wordpress:cli-php8.3
     depends_on:
       - db
       - wordpress
